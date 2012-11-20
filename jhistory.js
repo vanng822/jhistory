@@ -43,7 +43,7 @@
 		support.hashChange = ("onhashchange" in window);
 		var hashHandlers = {};
 		// Chrome fix
-		var attachPopstateTimeout = $.browser.safari? 1500:0;
+		var attachPopstateTimeout = $.browser.webkit? 1500:0;
 		
 		hashHandlers.pushState = {
 			init : function() {
@@ -51,7 +51,7 @@
 				if (reloadIfInitHash) {
 					var hash = getHash(window);
 					if (hash) {
-						window.location = hash;
+						window.location = getReloadUrl(hash);
 						return;
 					}
 				}
@@ -86,7 +86,7 @@
 			init : function() {
 				if ((appState = getHash(window))) {
 					if (reloadIfInitHash) {
-						window.location = appState;
+						window.location = getReloadUrl(appState);
 						return;
 					}
 					appCallback(appState);
@@ -137,7 +137,7 @@
 					var self = null;
 					if ((appState = getHash(window))) {
 						if (reloadIfInitHash) {
-							window.location = appState;
+							window.location = getReloadUrl(appState);
 							return;
 						}
 						self = this;
@@ -197,6 +197,14 @@
 				hash = hash.replace(shortenHashPattern, "");
 			}
 			return hash;
+		};
+		
+		var getReloadUrl = function(hash) {
+			var url = window.location.protocol + '//' + window.location.host;
+			if (hash.charAt(0) != '/') {
+				return url + '/' + hash;
+			}
+			return url + hash;
 		};
 
 		var getHashHandler = function() {
